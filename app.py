@@ -59,59 +59,19 @@ st.set_page_config(page_title="Simuladores Inversos de Marketing", layout="wide"
 st.title("Simuladores Inversos de Marketing")
 st.markdown("Optimiza tus estrategias con simulaciones inversas y visualizaciones interactivas.")
 
-# Instrucciones desplegables detalladas
-with st.expander("Instrucciones de Uso", expanded=False):
+# Instrucciones generales desplegables
+with st.expander("Instrucciones Generales", expanded=False):
     st.markdown("""
-    ### Guía para Usar los Simuladores Inversos de Marketing
-    Esta aplicación te permite diseñar estrategias de marketing trabajando hacia atrás desde tus objetivos. Sigue estos pasos:
-
-    1. **Selecciona un Simulador**:
-       - En la barra lateral, elige una herramienta de la lista visible (por ejemplo, "Segmentación de Audiencia").
-       - Cada simulador aborda un aspecto diferente del marketing.
-
-    2. **Completa los Detalles del Producto**:
-       - **Nombre**: Escribe un nombre único (no uses "Ejemplo: Café Premium").
-       - **Categoría**: Selecciona entre "Alimentos", "Tecnología", etc.
-       - **Audiencia Objetivo**: Define a quién va dirigido (ejemplo: "Jóvenes de 18-35 años").
-       - **Característica Única**: Destaca qué hace especial tu producto (ejemplo: "Sostenibilidad").
-       - **Precio**: Ingresa el costo en USD (suscripción mensual para tecnología).
-       - **Localidad**: Especifica el área (ejemplo: "México" o "Global").
-
-    3. **Define tu Objetivo**:
-       - Cada simulador pide un objetivo específico:
-         - **Segmentación de Audiencia**: Costo por Adquisición (CPA) objetivo.
-         - **Campañas de Contenido**: Número de interacciones deseadas.
-         - **Precios**: Unidades a vender.
-         - **Embudos de Conversión**: Tasa de conversión (%).
-         - **Crisis de Marca**: Daño máximo a la reputación (%).
-         - **SEO y Posicionamiento**: Tráfico orgánico mensual.
-         - **Lanzamiento de Producto**: Unidades adoptadas al inicio.
-         - **Marketing de Influencers**: Alcance en personas.
-         - **Inversión en Plataformas Digitales**: Ventas y presupuesto máximo.
-
-    4. **Calcula y Analiza**:
-       - Haz clic en el botón "Calcular" correspondiente (ejemplo: "Calcular Segmentos").
-       - Obtendrás una recomendación detallada y, si aplica, gráficos o tablas.
-
-    5. **Notas Específicas**:
-       - Para "Inversión en Plataformas Digitales", selecciona plataformas (predeterminadas o personalizadas) antes de calcular.
-       - Si no ves gráficos, significa que la respuesta no incluyó datos numéricos.
-
-    **Consejo**: Revisa los campos obligatorios si aparece una advertencia. ¡Explora cada simulador para optimizar tu estrategia!
+    ### Guía Básica
+    1. Selecciona un simulador en la barra lateral.
+    2. Completa los detalles del producto/servicio.
+    3. Define tu objetivo y haz clic en "Calcular".
+    4. Revisa las recomendaciones y visualizaciones.
+    **Nota**: Completa todos los campos obligatorios para evitar errores.
     """)
 
-# Menú en la barra lateral con explicación y lista visible
+# Menú en la barra lateral sin instrucciones generales
 st.sidebar.header("Menú de Simuladores")
-st.sidebar.markdown("""
-### ¿Qué es esta aplicación?
-Esta es un **Simulador Inverso de Marketing** creado por xAI. Te ayuda a planificar estrategias de marketing trabajando hacia atrás desde tus objetivos. Ingresa los detalles de tu producto y metas (por ejemplo, ventas, interacciones, tráfico) y obtén recomendaciones personalizadas con visualizaciones.
-
-### ¿Qué hace?
-- Ofrece herramientas para segmentación de audiencia, precios, SEO y más.
-- Calcula estrategias óptimas basadas en tus entradas.
-- Proporciona gráficos y tablas para un análisis fácil.
-- Soporta metas personalizadas y plataformas digitales.
-""")
 simulator_options = [
     "Segmentación de Audiencia",
     "Campañas de Contenido",
@@ -136,12 +96,16 @@ with st.expander("Ingresa los detalles (obligatorios)", expanded=True):
     locality = st.text_input("Localidad", "Ejemplo: México o Global", help="Especifica un país o 'Global' si aplica a todo el mundo.")
     details_complete = product_name and target_audience and unique_feature and price > 0 and locality and product_name != "Ejemplo: Café Premium"
 
-# Lógica para cada simulador con gráficos
+# Lógica para cada simulador con explicaciones específicas
 if not details_complete:
     st.warning("Por favor, completa todos los detalles del producto o servicio antes de continuar.")
 else:
     if selected_simulator == "Segmentación de Audiencia":
         st.header("Simulador Inverso de Segmentación de Audiencia")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador identifica los segmentos de mercado óptimos (edad, intereses, ubicación, comportamiento) para alcanzar un Costo por Adquisición (CPA) objetivo, basado en los detalles de tu producto y audiencia.
+            """)
         cpa_goal = st.number_input("Costo por Adquisición (CPA) objetivo", min_value=0.0, value=10.0, step=0.1)
         if st.button("Calcular Segmentos", key="seg"):
             with st.spinner("Calculando..."):
@@ -159,6 +123,10 @@ else:
 
     elif selected_simulator == "Campañas de Contenido":
         st.header("Simulador Inverso de Campañas de Contenido")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador recomienda formatos, tonos y un calendario de publicación para alcanzar un número específico de interacciones, optimizando tu estrategia de contenido según tu producto y audiencia.
+            """)
         engagement_goal = st.number_input("Objetivo de Interacciones", min_value=0, value=10000, step=100)
         if st.button("Calcular Estrategia", key="cont"):
             with st.spinner("Calculando..."):
@@ -176,6 +144,10 @@ else:
 
     elif selected_simulator == "Precios":
         st.header("Simulador Inverso de Precios")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador sugiere una estrategia de precios para alcanzar un objetivo de ventas en unidades, considerando las características de tu producto y el mercado objetivo.
+            """)
         sales_goal = st.number_input("Objetivo de Ventas (unidades)", min_value=0, value=1000, step=10)
         if st.button("Calcular Precios", key="price"):
             with st.spinner("Calculando..."):
@@ -193,6 +165,10 @@ else:
 
     elif selected_simulator == "Embudos de Conversión":
         st.header("Simulador Inverso de Embudos de Conversión")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador propone tácticas para cada etapa del embudo de conversión (conciencia, interés, decisión, acción) para lograr una tasa de conversión objetivo, adaptada a tu producto.
+            """)
         conversion_goal = st.number_input("Tasa de Conversión Objetivo (%)", min_value=0.0, max_value=100.0, value=5.0, step=0.1)
         if st.button("Calcular Estrategia", key="funnel"):
             with st.spinner("Calculando..."):
@@ -210,6 +186,10 @@ else:
 
     elif selected_simulator == "Crisis de Marca":
         st.header("Simulador Inverso de Crisis de Marca")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador ofrece una estrategia de comunicación para limitar el daño a la reputación de tu marca en una crisis, basado en un porcentaje máximo aceptable de daño.
+            """)
         damage_goal = st.number_input("Daño Máximo Aceptable a la Reputación (%)", min_value=0.0, max_value=100.0, value=10.0, step=0.1)
         if st.button("Calcular Respuesta", key="crisis"):
             with st.spinner("Calculando..."):
@@ -220,6 +200,10 @@ else:
 
     elif selected_simulator == "SEO y Posicionamiento":
         st.header("Simulador Inverso de SEO y Posicionamiento")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador recomienda palabras clave y estrategias SEO para alcanzar un objetivo de tráfico orgánico mensual, optimizando la visibilidad de tu producto en buscadores.
+            """)
         traffic_goal = st.number_input("Tráfico Orgánico Mensual Objetivo", min_value=0, value=50000, step=1000)
         if st.button("Calcular Estrategia", key="seo"):
             with st.spinner("Calculando..."):
@@ -237,6 +221,10 @@ else:
 
     elif selected_simulator == "Lanzamiento de Producto":
         st.header("Simulador Inverso de Lanzamiento de Producto")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador diseña un plan de lanzamiento para alcanzar un objetivo de adopción inicial en unidades, sugiriendo canales y tácticas basadas en tu producto.
+            """)
         adoption_goal = st.number_input("Objetivo de Adopción Inicial (unidades)", min_value=0, value=1000, step=10)
         if st.button("Calcular Plan", key="launch"):
             with st.spinner("Calculando..."):
@@ -254,6 +242,10 @@ else:
 
     elif selected_simulator == "Marketing de Influencers":
         st.header("Simulador Inverso de Marketing de Influencers")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador recomienda tipos de influencers y estrategias para alcanzar un objetivo de alcance en personas, optimizando la promoción de tu producto.
+            """)
         reach_goal = st.number_input("Objetivo de Alcance (personas)", min_value=0, value=500000, step=1000)
         if st.button("Calcular Estrategia", key="influencer"):
             with st.spinner("Calculando..."):
@@ -271,6 +263,10 @@ else:
 
     elif selected_simulator == "Inversión en Plataformas Digitales":
         st.header("Simulador Inverso de Inversión en Plataformas Digitales")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador calcula cuánto invertir y por cuánto tiempo en plataformas digitales seleccionadas para alcanzar un objetivo de ventas, respetando un presupuesto máximo.
+            """)
         sales_goal = st.number_input("Objetivo de Ventas (unidades)", min_value=0, value=1000, step=10)
         budget_limit = st.number_input("Presupuesto Total (en USD)", min_value=0.0, value=5000.0, step=100.0, help="Límite máximo de inversión total.")
         platforms_available = [
