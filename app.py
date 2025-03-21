@@ -68,7 +68,9 @@ with st.expander("Ingresa los detalles (obligatorios)", expanded=True):
     product_category = st.selectbox("Categoría", ["Alimentos", "Tecnología", "Moda", "Servicios", "Otros"])
     target_audience = st.text_input("Audiencia objetivo", "Ejemplo: Jóvenes de 18-35 años")
     unique_feature = st.text_input("Característica única", "Ejemplo: Sostenibilidad")
-    details_complete = product_name and target_audience and unique_feature and product_name != "Ejemplo: Café Premium"
+    price = st.number_input("Precio (en USD)", min_value=0.0, value=10.0, step=0.1, help="Si es software/aplicación, indica el precio de suscripción mensual.")
+    locality = st.text_input("Localidad", "Ejemplo: México o Global", help="Especifica un país o 'Global' si aplica a todo el mundo.")
+    details_complete = product_name and target_audience and unique_feature and price > 0 and locality and product_name != "Ejemplo: Café Premium"
 
 # Lógica para cada simulador con gráficas
 if not details_complete:
@@ -79,7 +81,7 @@ else:
         cpa_goal = st.number_input("Costo por Adquisición (CPA) objetivo", min_value=0.0, value=10.0, step=0.1)
         if st.button("Calcular Segmentos", key="seg"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un CPA objetivo de {cpa_goal}, ¿cuáles deberían ser los segmentos de mercado óptimos (edad, intereses, ubicación, comportamiento)? Proporciona datos numéricos si es posible (ejemplo: Edad 18-24: 30%)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un CPA objetivo de {cpa_goal}, ¿cuáles deberían ser los segmentos de mercado óptimos (edad, intereses, ubicación, comportamiento)? Proporciona datos numéricos si es posible (ejemplo: Edad 18-24: 30%)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
@@ -96,7 +98,7 @@ else:
         engagement_goal = st.number_input("Objetivo de interacciones", min_value=0, value=10000, step=100)
         if st.button("Calcular Estrategia", key="cont"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un objetivo de {engagement_goal} interacciones, ¿qué formatos, tonos y calendario de publicación debo usar? Incluye estimaciones numéricas si es posible (ejemplo: Video: 5000 interacciones)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {engagement_goal} interacciones, ¿qué formatos, tonos y calendario de publicación debo usar? Incluye estimaciones numéricas si es posible (ejemplo: Video: 5000 interacciones)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
@@ -113,7 +115,7 @@ else:
         sales_goal = st.number_input("Objetivo de unidades vendidas", min_value=0, value=1000, step=10)
         if st.button("Calcular Precios", key="price"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un objetivo de {sales_goal} unidades vendidas, ¿qué estrategia de precios debo emplear? Incluye ejemplos numéricos si es posible (ejemplo: Precio $10: 800 unidades)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio actual de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {sales_goal} unidades vendidas, ¿qué estrategia de precios debo emplear? Incluye ejemplos numéricos si es posible (ejemplo: Precio $10: 800 unidades)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
@@ -130,7 +132,7 @@ else:
         conversion_goal = st.number_input("Tasa de conversión objetivo (%)", min_value=0.0, max_value=100.0, value=5.0, step=0.1)
         if st.button("Calcular Estrategia", key="funnel"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dada una tasa de conversión objetivo de {conversion_goal}%, ¿qué tácticas debo usar en cada etapa del embudo? Incluye tasas por etapa si es posible (ejemplo: Conciencia: 50%)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dada una tasa de conversión objetivo de {conversion_goal}%, ¿qué tácticas debo usar en cada etapa del embudo? Incluye tasas por etapa si es posible (ejemplo: Conciencia: 50%)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
@@ -147,7 +149,7 @@ else:
         damage_goal = st.number_input("Daño máximo aceptable a la reputación (%)", min_value=0.0, max_value=100.0, value=10.0, step=0.1)
         if st.button("Calcular Respuesta", key="crisis"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un daño máximo aceptable de {damage_goal}% a la reputación, ¿qué respuesta de comunicación debo usar en una crisis?"
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un daño máximo aceptable de {damage_goal}% a la reputación, ¿qué respuesta de comunicación debo usar en una crisis?"
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
@@ -157,7 +159,7 @@ else:
         traffic_goal = st.number_input("Objetivo de tráfico orgánico mensual", min_value=0, value=50000, step=1000)
         if st.button("Calcular Estrategia", key="seo"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un objetivo de {traffic_goal} visitas orgánicas mensuales, ¿qué palabras clave y estrategias debo usar? Incluye estimaciones de tráfico por palabra si es posible (ejemplo: 'café sostenible': 20000 visitas)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {traffic_goal} visitas orgánicas mensuales, ¿qué palabras clave y estrategias debo usar? Incluye estimaciones de tráfico por palabra si es posible (ejemplo: 'café sostenible': 20000 visitas)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
@@ -174,7 +176,7 @@ else:
         adoption_goal = st.number_input("Objetivo de adopción inicial (unidades)", min_value=0, value=1000, step=10)
         if st.button("Calcular Plan", key="launch"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un objetivo de {adoption_goal} unidades vendidas en el lanzamiento, ¿qué plan debo seguir? Incluye estimaciones por canal si es posible (ejemplo: Redes Sociales: 400 unidades)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {adoption_goal} unidades vendidas en el lanzamiento, ¿qué plan debo seguir? Incluye estimaciones por canal si es posible (ejemplo: Redes Sociales: 400 unidades)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
@@ -191,7 +193,7 @@ else:
         reach_goal = st.number_input("Objetivo de alcance (personas)", min_value=0, value=500000, step=1000)
         if st.button("Calcular Estrategia", key="influencer"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un objetivo de alcance de {reach_goal} personas, ¿qué tipo de influencers debo usar? Incluye estimaciones de alcance por tipo si es posible (ejemplo: Micro-influencers: 100000 personas)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de alcance de {reach_goal} personas, ¿qué tipo de influencers debo usar? Incluye estimaciones de alcance por tipo si es posible (ejemplo: Micro-influencers: 100000 personas)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
@@ -208,11 +210,10 @@ else:
         sales_goal = st.number_input("Objetivo de ventas (unidades)", min_value=0, value=1000, step=10)
         if st.button("Calcular Inversión", key="digital"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un objetivo de {sales_goal} unidades vendidas, ¿cuánto debo invertir y por cuánto tiempo en las siguientes plataformas digitales: Google Ads, Facebook, Instagram, Pinterest, LinkedIn, YouTube, TikTok, Influencers, Twitter (X), Email Marketing? Proporciona estimaciones numéricas en dólares y tiempo en semanas si es posible (ejemplo: Google Ads: $500 por 4 semanas)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {sales_goal} unidades vendidas, ¿cuánto debo invertir y por cuánto tiempo en las siguientes plataformas digitales: Google Ads, Facebook, Instagram, Pinterest, LinkedIn, YouTube, TikTok, Influencers, Twitter (X), Email Marketing? Proporciona estimaciones numéricas en dólares y tiempo en semanas si es posible (ejemplo: Google Ads: $500 por 4 semanas)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Intentar graficar
             data = extract_data_for_chart(result)
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Plataforma", "Inversión"])
@@ -224,4 +225,4 @@ else:
 # Pie de página
 st.sidebar.markdown("---")
 st.sidebar.write(f"Desarrollado por xAI - {datetime.now().strftime('%B %Y')}")
-st.sidebar.info("Versión 1.3 - Contacto: support@xai.com")
+st.sidebar.info("Versión 1.4 - Contacto: support@xai.com")
