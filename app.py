@@ -59,7 +59,48 @@ st.set_page_config(page_title="Simuladores Inversos de Marketing", layout="wide"
 st.title("Simuladores Inversos de Marketing")
 st.markdown("Optimiza tus estrategias con simulaciones inversas y visualizaciones interactivas.")
 
-# Menú en la barra lateral con explicación
+# Instrucciones desplegables detalladas
+with st.expander("Instrucciones de Uso", expanded=False):
+    st.markdown("""
+    ### Guía para Usar los Simuladores Inversos de Marketing
+    Esta aplicación te permite diseñar estrategias de marketing trabajando hacia atrás desde tus objetivos. Sigue estos pasos:
+
+    1. **Selecciona un Simulador**:
+       - En la barra lateral, elige una herramienta de la lista visible (por ejemplo, "Segmentación de Audiencia").
+       - Cada simulador aborda un aspecto diferente del marketing.
+
+    2. **Completa los Detalles del Producto**:
+       - **Nombre**: Escribe un nombre único (no uses "Ejemplo: Café Premium").
+       - **Categoría**: Selecciona entre "Alimentos", "Tecnología", etc.
+       - **Audiencia Objetivo**: Define a quién va dirigido (ejemplo: "Jóvenes de 18-35 años").
+       - **Característica Única**: Destaca qué hace especial tu producto (ejemplo: "Sostenibilidad").
+       - **Precio**: Ingresa el costo en USD (suscripción mensual para tecnología).
+       - **Localidad**: Especifica el área (ejemplo: "México" o "Global").
+
+    3. **Define tu Objetivo**:
+       - Cada simulador pide un objetivo específico:
+         - **Segmentación de Audiencia**: Costo por Adquisición (CPA) objetivo.
+         - **Campañas de Contenido**: Número de interacciones deseadas.
+         - **Precios**: Unidades a vender.
+         - **Embudos de Conversión**: Tasa de conversión (%).
+         - **Crisis de Marca**: Daño máximo a la reputación (%).
+         - **SEO y Posicionamiento**: Tráfico orgánico mensual.
+         - **Lanzamiento de Producto**: Unidades adoptadas al inicio.
+         - **Marketing de Influencers**: Alcance en personas.
+         - **Inversión en Plataformas Digitales**: Ventas y presupuesto máximo.
+
+    4. **Calcula y Analiza**:
+       - Haz clic en el botón "Calcular" correspondiente (ejemplo: "Calcular Segmentos").
+       - Obtendrás una recomendación detallada y, si aplica, gráficos o tablas.
+
+    5. **Notas Específicas**:
+       - Para "Inversión en Plataformas Digitales", selecciona plataformas (predeterminadas o personalizadas) antes de calcular.
+       - Si no ves gráficos, significa que la respuesta no incluyó datos numéricos.
+
+    **Consejo**: Revisa los campos obligatorios si aparece una advertencia. ¡Explora cada simulador para optimizar tu estrategia!
+    """)
+
+# Menú en la barra lateral con explicación y lista visible
 st.sidebar.header("Menú de Simuladores")
 st.sidebar.markdown("""
 ### ¿Qué es esta aplicación?
@@ -82,7 +123,7 @@ simulator_options = [
     "Marketing de Influencers",
     "Inversión en Plataformas Digitales"
 ]
-selected_simulator = st.sidebar.selectbox("Selecciona un Simulador", simulator_options, help="Elige una herramienta para comenzar.")
+selected_simulator = st.sidebar.radio("Selecciona un Simulador", simulator_options, help="Elige una herramienta para comenzar.")
 
 # Campos comunes para detalles del producto/servicio
 st.subheader("Detalles del Producto o Servicio")
