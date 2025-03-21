@@ -31,14 +31,17 @@ def call_openrouter(prompt):
     except (KeyError, IndexError):
         return "Error: Respuesta de la API no válida."
 
-# Función para extraer datos numéricos de la respuesta
-def extract_data_for_chart(text):
-    data = {}
+# Función para extraer datos numéricos de la respuesta (inversión y tiempo)
+def extract_data_for_table_and_chart(text):
+    data = []
     lines = text.split("\n")
     for line in lines:
-        match = re.search(r"(\w+[\w\s]*):\s*\$?(\d+\.?\d*)", line)
+        match = re.search(r"(\w+[\w\s]*):\s*\$?(\d+\.?\d*)\s*(?:por\s*(\d+\.?\d*)\s*semanas)?", line)
         if match:
-            data[match.group(1)] = float(match.group(2))
+            platform = match.group(1).strip()
+            investment = float(match.group(2))
+            weeks = float(match.group(3)) if match.group(3) else None
+            data.append({"Plataforma": platform, "Inversión": investment, "Semanas": weeks})
     return data if data else None
 
 # Configuración de la interfaz de Streamlit
@@ -208,21 +211,46 @@ else:
     elif selected_simulator == "Inversión en Plataformas Digitales":
         st.header("Simulador Inverso de Inversión en Plataformas Digitales")
         sales_goal = st.number_input("Objetivo de ventas (unidades)", min_value=0, value=1000, step=10)
-        if st.button("Calcular Inversión", key="digital"):
+        budget_limit = st.number_input("Presupuesto total (en USD)", min_value=0.0, value=5000.0, step=100.0, help="Límite máximo de inversión total.")
+        platforms_available = [
+            "Google Ads", "Facebook", "Instagram", "Pinterest", "LinkedIn",
+            "YouTube", "TikTok", "Influencers", "Twitter (X)", "Email Marketing"
+        ]
+        selected_platforms = st.multiselect(
+            "Selecciona las plataformas digitales",
+            platforms_available,
+            default=["Google Ads", "Facebook", "Instagram"],
+            help="Elige las plataformas en las que deseas invertir."
+        )
+        custom_platforms = st.text_input("Añade plataformas personalizadas (separadas por comas)", "", help="Ejemplo: Snapchat, WhatsApp")
+        if custom_platforms:
+            custom_list = [p.strip() for p in custom_platforms.split(",") if p.strip()]
+            selected_platforms.extend(custom_list)
+
+        if not selected_platforms:
+            st.warning("Por favor, selecciona o añade al menos una plataforma.")
+        elif st.button("Calcular Inversión", key="digital"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {sales_goal} unidades vendidas, ¿cuánto debo invertir y por cuánto tiempo en las siguientes plataformas digitales: Google Ads, Facebook, Instagram, Pinterest, LinkedIn, YouTube, TikTok, Influencers, Twitter (X), Email Marketing? Proporciona estimaciones numéricas en dólares y tiempo en semanas si es posible (ejemplo: Google Ads: $500 por 4 semanas)."
+                platforms_str = ", ".join(selected_platforms)
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {sales_goal} unidades vendidas y un presupuesto total máximo de ${budget_limit}, ¿cuánto debo invertir y por cuánto tiempo en las siguientes plataformas digitales: {platforms_str}? Proporciona estimaciones numéricas en dólares y tiempo en semanas (ejemplo: Google Ads: $500 por 4 semanas)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            data = extract_data_for_chart(result)
+            
+            # Extraer datos para tabla y gráfica
+            data = extract_data_for_table_and_chart(result)
             if data:
-                df = pd.DataFrame(list(data.items()), columns=["Plataforma", "Inversión"])
+                df = pd.DataFrame(data)
+                # Mostrar tabla
+                st.subheader("Detalles de Inversión")
+                st.table(df)
+                # Gráfica
                 fig = px.pie(df, names="Plataforma", values="Inversión", title="Distribución de Inversión por Plataforma")
                 st.plotly_chart(fig, use_container_width=True)
             else:
-                st.info("No se encontraron datos numéricos para graficar.")
+                st.info("No se encontraron datos numéricos para mostrar tabla o gráfica.")
 
 # Pie de página
 st.sidebar.markdown("---")
 st.sidebar.write(f"Desarrollado por xAI - {datetime.now().strftime('%B %Y')}")
-st.sidebar.info("Versión 1.4 - Contacto: support@xai.com")
+st.sidebar.info("Versión 1.6 - Contacto: support@xai.com")
