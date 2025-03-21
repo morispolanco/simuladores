@@ -31,13 +31,12 @@ def call_openrouter(prompt):
     except (KeyError, IndexError):
         return "Error: Respuesta de la API no válida."
 
-# Función para intentar extraer datos numéricos de la respuesta
+# Función para extraer datos numéricos de la respuesta
 def extract_data_for_chart(text):
-    # Busca patrones como "nombre: valor" o listas numeradas
     data = {}
     lines = text.split("\n")
     for line in lines:
-        match = re.search(r"(\w+[\w\s]*):\s*(\d+\.?\d*)", line)
+        match = re.search(r"(\w+[\w\s]*):\s*\$?(\d+\.?\d*)", line)
         if match:
             data[match.group(1)] = float(match.group(2))
     return data if data else None
@@ -57,7 +56,8 @@ simulator_options = [
     "Crisis de Marca",
     "SEO y Posicionamiento",
     "Lanzamiento de Producto",
-    "Influencer Marketing"
+    "Influencer Marketing",
+    "Inversión en Plataformas Digitales"
 ]
 selected_simulator = st.sidebar.selectbox("Selecciona un Simulador", simulator_options, help="Elige una herramienta.")
 
@@ -79,11 +79,10 @@ else:
         cpa_goal = st.number_input("Costo por Adquisición (CPA) objetivo", min_value=0.0, value=10.0, step=0.1)
         if st.button("Calcular Segmentos", key="seg"):
             with st.spinner("Calculando..."):
-                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un CPA objetivo de {cpa_goal}, ¿cuáles deberían ser los segmentos de mercado óptimos (edad, intereses, ubicación, comportamiento)? Proporciona datos numéricos si es posible (ejemplo: Edad 18-24: 30%, Edad 25-34: 50%)."
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un CPA objetivo de {cpa_goal}, ¿cuáles deberían ser los segmentos de mercado óptimos (edad, intereses, ubicación, comportamiento)? Proporciona datos numéricos si es posible (ejemplo: Edad 18-24: 30%)."
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Intentar graficar
             data = extract_data_for_chart(result)
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Segmento", "Porcentaje"])
@@ -101,7 +100,6 @@ else:
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Intentar graficar
             data = extract_data_for_chart(result)
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Formato", "Interacciones"])
@@ -119,7 +117,6 @@ else:
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Intentar graficar
             data = extract_data_for_chart(result)
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Precio", "Unidades"])
@@ -137,7 +134,6 @@ else:
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Intentar graficar
             data = extract_data_for_chart(result)
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Etapa", "Tasa"])
@@ -155,7 +151,6 @@ else:
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Sin gráfica aquí, ya que suele ser texto narrativo
 
     elif selected_simulator == "SEO y Posicionamiento":
         st.header("Simulador Inverso de SEO")
@@ -166,7 +161,6 @@ else:
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Intentar graficar
             data = extract_data_for_chart(result)
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Palabra Clave", "Tráfico"])
@@ -184,7 +178,6 @@ else:
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Intentar graficar
             data = extract_data_for_chart(result)
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Canal", "Unidades"])
@@ -202,7 +195,6 @@ else:
                 result = call_openrouter(prompt)
             st.subheader("Recomendación")
             st.markdown(result, unsafe_allow_html=True)
-            # Intentar graficar
             data = extract_data_for_chart(result)
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Tipo de Influencer", "Alcance"])
@@ -211,7 +203,25 @@ else:
             else:
                 st.info("No se encontraron datos numéricos para graficar.")
 
+    elif selected_simulator == "Inversión en Plataformas Digitales":
+        st.header("Simulador Inverso de Inversión en Plataformas Digitales")
+        sales_goal = st.number_input("Objetivo de ventas (unidades)", min_value=0, value=1000, step=10)
+        if st.button("Calcular Inversión", key="digital"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', y dado un objetivo de {sales_goal} unidades vendidas, ¿cuánto debo invertir y por cuánto tiempo en las siguientes plataformas digitales: Google Ads, Facebook, Instagram, Pinterest, LinkedIn, YouTube, TikTok, Influencers, Twitter (X), Email Marketing? Proporciona estimaciones numéricas en dólares y tiempo en semanas si es posible (ejemplo: Google Ads: $500 por 4 semanas)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            # Intentar graficar
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Plataforma", "Inversión"])
+                fig = px.pie(df, names="Plataforma", values="Inversión", title="Distribución de Inversión por Plataforma")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
 # Pie de página
 st.sidebar.markdown("---")
 st.sidebar.write(f"Desarrollado por xAI - {datetime.now().strftime('%B %Y')}")
-st.sidebar.info("Versión 1.2 - Contacto: support@xai.com")
+st.sidebar.info("Versión 1.3 - Contacto: support@xai.com")
