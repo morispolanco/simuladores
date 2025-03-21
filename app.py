@@ -14,13 +14,13 @@ HEADERS = {
     "Authorization": f"Bearer {API_KEY}"
 }
 
-# Función para llamar a la API de OpenRouter
+# Función para llamar a la API de OpenRouter usando requests
 def call_openrouter(prompt):
     try:
         payload = {
-            "model": "mistralai/mistral-small-3.1-24b-instruct:free",
+            "model": "qwen/qwq-32b:free",
             "messages": [
-                {"role": "user", "content": [{"type": "text", "text": prompt}]}
+                {"role": "user", "content": prompt}
             ]
         }
         response = requests.post(API_URL, headers=HEADERS, data=json.dumps(payload), timeout=10)
