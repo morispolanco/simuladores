@@ -72,14 +72,13 @@ with st.expander("Instrucciones Generales", expanded=False):
 
 # Menú en la barra lateral sin instrucciones generales
 st.sidebar.header("Menú de Simuladores")
-simulator_options = [
-    "Segmentación de Audiencia", "Campañas de Contenido", "Precios",
-    "Embudos de Conversión", "Crisis de Marca", "SEO y Posicionamiento",
-    "Lanzamiento de Producto", "Marketing de Influencers", "Inversión en Plataformas Digitales",
-    "Retención de Clientes", "Publicidad Offline", "Experiencia del Cliente",
-    "Expansión de Mercado", "Gestión de Presupuesto Total", "Eventos y Promociones",
-    "Competencia", "Innovación de Producto"
-]
+simulator_options = sorted([
+    "Campañas de Contenido", "Competencia", "Crisis de Marca", "Embudos de Conversión",
+    "Eventos y Promociones", "Expansión de Mercado", "Experiencia del Cliente",
+    "Gestión de Presupuesto Total", "Innovación de Producto", "Inversión en Plataformas Digitales",
+    "Lanzamiento de Producto", "Marketing de Influencers", "Precios", "Publicidad Offline",
+    "Retención de Clientes", "Segmentación de Audiencia", "SEO y Posicionamiento"
+])
 selected_simulator = st.sidebar.radio("Selecciona un Simulador", simulator_options, help="Elige una herramienta para comenzar.")
 
 # Campos comunes para detalles del producto/servicio
@@ -477,4 +476,4 @@ else:
 # Pie de página
 st.sidebar.markdown("---")
 st.sidebar.write(f"Desarrollado por xAI - {datetime.now().strftime('%B %Y')}")
-st.sidebar.info("Versión 1.6 - Contacto: support@xai.com")
+st.sidebar.info("Versión 1.6 - Contacto: mp@ufm.edu")
