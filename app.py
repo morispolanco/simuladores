@@ -73,15 +73,12 @@ with st.expander("Instrucciones Generales", expanded=False):
 # Menú en la barra lateral sin instrucciones generales
 st.sidebar.header("Menú de Simuladores")
 simulator_options = [
-    "Segmentación de Audiencia",
-    "Campañas de Contenido",
-    "Precios",
-    "Embudos de Conversión",
-    "Crisis de Marca",
-    "SEO y Posicionamiento",
-    "Lanzamiento de Producto",
-    "Marketing de Influencers",
-    "Inversión en Plataformas Digitales"
+    "Segmentación de Audiencia", "Campañas de Contenido", "Precios",
+    "Embudos de Conversión", "Crisis de Marca", "SEO y Posicionamiento",
+    "Lanzamiento de Producto", "Marketing de Influencers", "Inversión en Plataformas Digitales",
+    "Retención de Clientes", "Publicidad Offline", "Experiencia del Cliente",
+    "Expansión de Mercado", "Gestión de Presupuesto Total", "Eventos y Promociones",
+    "Competencia", "Innovación de Producto"
 ]
 selected_simulator = st.sidebar.radio("Selecciona un Simulador", simulator_options, help="Elige una herramienta para comenzar.")
 
@@ -96,7 +93,7 @@ with st.expander("Ingresa los detalles (obligatorios)", expanded=True):
     locality = st.text_input("Localidad", "Ejemplo: México o Global", help="Especifica un país o 'Global' si aplica a todo el mundo.")
     details_complete = product_name and target_audience and unique_feature and price > 0 and locality and product_name != "Ejemplo: Café Premium"
 
-# Lógica para cada simulador con explicaciones específicas
+# Lógica para cada simulador
 if not details_complete:
     st.warning("Por favor, completa todos los detalles del producto o servicio antes de continuar.")
 else:
@@ -302,6 +299,180 @@ else:
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.info("No se encontraron datos numéricos para mostrar tabla o gráfica.")
+
+    elif selected_simulator == "Retención de Clientes":
+        st.header("Simulador Inverso de Retención de Clientes")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador calcula estrategias para alcanzar un porcentaje objetivo de retención de clientes, sugiriendo tácticas como programas de lealtad o emails personalizados.
+            """)
+        retention_goal = st.number_input("Porcentaje de Retención Objetivo (%)", min_value=0.0, max_value=100.0, value=80.0, step=0.1)
+        if st.button("Calcular Estrategias", key="retention"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de retención de {retention_goal}%, ¿qué estrategias debo usar para retener clientes? Incluye estimaciones numéricas si es posible (ejemplo: Programa de lealtad: 20%)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Estrategia", "Impacto"])
+                fig = px.bar(df, x="Estrategia", y="Impacto", title="Impacto en Retención por Estrategia")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
+    elif selected_simulator == "Publicidad Offline":
+        st.header("Simulador Inverso de Publicidad Offline")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador diseña una estrategia de publicidad tradicional (TV, radio, vallas publicitarias, etc.) para alcanzar un objetivo de alcance o ventas, considerando el presupuesto y la localidad.
+            """)
+        reach_goal = st.number_input("Objetivo de Alcance (personas)", min_value=0, value=100000, step=1000)
+        budget_limit = st.number_input("Presupuesto Total (en USD)", min_value=0.0, value=5000.0, step=100.0)
+        if st.button("Calcular Estrategia", key="offline"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de alcance de {reach_goal} personas y un presupuesto máximo de ${budget_limit}, ¿qué estrategia de publicidad offline (TV, radio, vallas, etc.) debo usar? Incluye estimaciones numéricas si es posible (ejemplo: TV: $2000 para 50000 personas)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Canal", "Alcance"])
+                fig = px.pie(df, names="Canal", values="Alcance", title="Distribución de Alcance por Canal Offline")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
+    elif selected_simulator == "Experiencia del Cliente":
+        st.header("Simulador Inverso de Experiencia del Cliente")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador propone mejoras en puntos de contacto (atención al cliente, sitio web, entrega) para lograr un puntaje objetivo de satisfacción (como NPS o CSAT).
+            """)
+        satisfaction_goal = st.number_input("Puntaje de Satisfacción Objetivo (NPS)", min_value=-100, max_value=100, value=50, step=1)
+        if st.button("Calcular Mejoras", key="cx"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de NPS de {satisfaction_goal}, ¿qué mejoras en la experiencia del cliente debo implementar? Incluye estimaciones numéricas si es posible (ejemplo: Chat en vivo: +15 puntos NPS)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Mejora", "Impacto"])
+                fig = px.bar(df, x="Mejora", y="Impacto", title="Impacto en NPS por Mejora")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
+    elif selected_simulator == "Expansión de Mercado":
+        st.header("Simulador Inverso de Expansión de Mercado")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador sugiere estrategias para entrar en nuevos mercados o regiones, alcanzando un objetivo de ventas o cuota de mercado en una nueva localidad.
+            """)
+        sales_goal = st.number_input("Objetivo de Ventas (unidades)", min_value=0, value=1000, step=10)
+        new_locality = st.text_input("Nueva Localidad", "Ejemplo: España")
+        if st.button("Calcular Estrategia", key="expansion"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad actual '{locality}', dado un objetivo de {sales_goal} unidades vendidas en la nueva localidad '{new_locality}', ¿qué estrategias debo usar para expandir el mercado? Incluye estimaciones numéricas si es posible (ejemplo: Alianzas locales: 300 unidades)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Estrategia", "Ventas"])
+                fig = px.bar(df, x="Estrategia", y="Ventas", title="Ventas por Estrategia de Expansión")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
+    elif selected_simulator == "Gestión de Presupuesto Total":
+        st.header("Simulador Inverso de Gestión de Presupuesto Total")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador distribuye un presupuesto total de marketing entre canales digitales y offline para maximizar un objetivo combinado (ventas, tráfico, alcance).
+            """)
+        total_budget = st.number_input("Presupuesto Total (en USD)", min_value=0.0, value=10000.0, step=100.0)
+        goal_type = st.selectbox("Objetivo Principal", ["Ventas (unidades)", "Alcance (personas)", "Tráfico (visitas)"])
+        goal_value = st.number_input(f"Valor del Objetivo ({goal_type.split()[0]})", min_value=0, value=5000, step=100)
+        if st.button("Calcular Distribución", key="budget"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un presupuesto total de ${total_budget} y un objetivo de {goal_value} {goal_type.split()[0].lower()}, ¿cómo debo distribuir el presupuesto entre canales digitales y offline? Incluye estimaciones numéricas si es posible (ejemplo: Google Ads: $2000)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Canal", "Inversión"])
+                fig = px.pie(df, names="Canal", values="Inversión", title="Distribución del Presupuesto")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
+    elif selected_simulator == "Eventos y Promociones":
+        st.header("Simulador Inverso de Eventos y Promociones")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador planea eventos o promociones (descuentos, ferias) para alcanzar un objetivo de ventas o asistencia, ajustándose a un presupuesto.
+            """)
+        sales_goal = st.number_input("Objetivo de Ventas (unidades)", min_value=0, value=500, step=10)
+        budget_limit = st.number_input("Presupuesto Total (en USD)", min_value=0.0, value=2000.0, step=100.0)
+        if st.button("Calcular Plan", key="events"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {sales_goal} unidades vendidas y un presupuesto máximo de ${budget_limit}, ¿qué eventos o promociones debo realizar? Incluye estimaciones numéricas si es posible (ejemplo: Feria local: 200 ventas)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Evento", "Ventas"])
+                fig = px.bar(df, x="Evento", y="Ventas", title="Ventas por Evento o Promoción")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
+    elif selected_simulator == "Competencia":
+        st.header("Simulador Inverso de Competencia")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador analiza cómo superar a un competidor específico en ventas, visibilidad o cuota de mercado, sugiriendo estrategias diferenciadoras.
+            """)
+        competitor_name = st.text_input("Nombre del Competidor", "Ejemplo: Competidor X")
+        sales_increase = st.number_input("Incremento de Ventas Objetivo (%)", min_value=0.0, value=10.0, step=0.1)
+        if st.button("Calcular Estrategia", key="competition"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de superar al competidor '{competitor_name}' en un {sales_increase}% de ventas, ¿qué estrategias debo usar? Incluye estimaciones numéricas si es posible (ejemplo: Campaña diferenciadora: +5%)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Estrategia", "Incremento"])
+                fig = px.bar(df, x="Estrategia", y="Incremento", title="Incremento de Ventas por Estrategia")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
+    elif selected_simulator == "Innovación de Producto":
+        st.header("Simulador Inverso de Innovación de Producto")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador propone mejoras o nuevas características para tu producto que cumplan un objetivo de adopción o satisfacción, basado en las necesidades de la audiencia.
+            """)
+        adoption_goal = st.number_input("Objetivo de Adopción (unidades)", min_value=0, value=1000, step=10)
+        if st.button("Calcular Innovaciones", key="innovation"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', dado un objetivo de {adoption_goal} unidades adoptadas, ¿qué mejoras o nuevas características debo implementar? Incluye estimaciones numéricas si es posible (ejemplo: Envase ecológico: 300 unidades)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Innovación", "Adopción"])
+                fig = px.bar(df, x="Innovación", y="Adopción", title="Adopción por Innovación")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
 
 # Pie de página
 st.sidebar.markdown("---")
