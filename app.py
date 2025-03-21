@@ -49,8 +49,18 @@ st.set_page_config(page_title="Inverse Marketing Simulators", layout="wide")
 st.title("Inverse Marketing Simulators")
 st.markdown("Optimize your strategies with inverse simulations and interactive visualizations.")
 
-# Sidebar menu
+# Sidebar menu with explanation
 st.sidebar.header("Simulator Menu")
+st.sidebar.markdown("""
+### What is this app?
+This is an **Inverse Marketing Simulator** built by xAI. It helps you plan marketing strategies by working backwards from your goals. Enter your product details and targets (e.g., sales, engagement, traffic), and get tailored recommendations with visualizations.
+
+### What does it do?
+- Offers tools for audience segmentation, pricing, SEO, and more.
+- Calculates optimal strategies based on your inputs.
+- Provides charts and tables for easy analysis.
+- Supports custom goals and digital platforms.
+""")
 simulator_options = [
     "Audience Segmentation",
     "Content Campaigns",
