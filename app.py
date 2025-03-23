@@ -76,7 +76,8 @@ simulator_options = sorted([
     "Campañas de Contenido", "Competencia", "Crisis de Marca", "Embudos de Conversión",
     "Eventos y Promociones", "Expansión de Mercado", "Experiencia del Cliente",
     "Gestión de Presupuesto Total", "Innovación de Producto", "Inversión en Plataformas Digitales",
-    "Lanzamiento de Producto", "Marketing de Influencers", "Precios", "Publicidad Offline",
+    "Lanzamiento de Producto", "Lanzamiento sin Presupuesto Digital",  # Nuevo simulador
+    "Marketing de Influencers", "Precios", "Publicidad Offline",
     "Retención de Clientes", "Segmentación de Audiencia", "SEO y Posicionamiento"
 ])
 selected_simulator = st.sidebar.radio("Selecciona un Simulador", simulator_options, help="Elige una herramienta para comenzar.")
@@ -469,6 +470,28 @@ else:
             if data:
                 df = pd.DataFrame(list(data.items()), columns=["Innovación", "Adopción"])
                 fig = px.bar(df, x="Innovación", y="Adopción", title="Adopción por Innovación")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No se encontraron datos numéricos para graficar.")
+
+    elif selected_simulator == "Lanzamiento sin Presupuesto Digital":
+        st.header("Simulador Inverso de Lanzamiento sin Presupuesto Digital")
+        with st.expander("¿Qué hace este simulador?", expanded=False):
+            st.markdown("""
+            Este simulador recomienda estrategias orgánicas y de bajo costo (sin inversión en plataformas digitales pagadas) para lanzar tu producto, darlo a conocer o conseguir suscriptores, adaptadas a tu audiencia y producto.
+            """)
+        goal_type = st.selectbox("Objetivo Principal", ["Conciencia (personas alcanzadas)", "Suscriptores (número)", "Ventas (unidades)"])
+        goal_value = st.number_input(f"Valor del Objetivo ({goal_type.split()[0]})", min_value=0, value=1000, step=10)
+        if st.button("Calcular Estrategia", key="zero_budget"):
+            with st.spinner("Calculando..."):
+                prompt = f"Para un producto '{product_name}' en la categoría '{product_category}', dirigido a '{target_audience}' con la característica única '{unique_feature}', con un precio de ${price} ({'suscripción mensual' if product_category == 'Tecnología' else 'precio unitario'}) y en la localidad '{locality}', sin presupuesto para invertir en plataformas digitales pagadas, dado un objetivo de {goal_value} {goal_type.split()[0].lower()}, ¿qué estrategias orgánicas o de bajo costo debo usar para lanzar el producto, darlo a conocer o conseguir suscriptores? Incluye estimaciones numéricas si es posible (ejemplo: Publicaciones en redes sociales: 500 personas alcanzadas)."
+                result = call_openrouter(prompt)
+            st.subheader("Recomendación")
+            st.markdown(result, unsafe_allow_html=True)
+            data = extract_data_for_chart(result)
+            if data:
+                df = pd.DataFrame(list(data.items()), columns=["Estrategia", "Impacto"])
+                fig = px.bar(df, x="Estrategia", y="Impacto", title=f"Impacto en {goal_type.split()[0]} por Estrategia")
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.info("No se encontraron datos numéricos para graficar.")
